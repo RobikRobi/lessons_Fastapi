@@ -3,11 +3,7 @@ from pydantic import BaseModel
 
 class Сheck(BaseModel):
 
-    cash: int
-
-class IdCheck(BaseModel):
-
-    id: int
+    balance: int
 
 class UpdateCheck(BaseModel):
     

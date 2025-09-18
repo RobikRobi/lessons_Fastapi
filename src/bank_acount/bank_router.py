@@ -1,40 +1,44 @@
 from fastapi import APIRouter
 
-from scr.bank_acount.bank_shema import Check
-from scr.bank_acount.bank_sheme import IdCheck
-from scr.bank_acount.bank_sheme import DelCheck
-from scr.bank_acount.bank_sheme import UpdateCheck
+from src.bank_acount.bank_shema import Сheck
+from src.bank_acount.bank_shema import DelCheck
+from src.bank_acount.bank_shema import UpdateCheck
 
 app = APIRouter(prefix="/bank", tags=["Bank"])
 
 deposit = [100, 200, 0]
 
-# добавить запись в массив
-@app.post("/add_check") 
-def cash_add(check:Check):
-    deposit.append(check)
-    return {"msg":"Ваши средства переведены на депозит"}
+# Добавить запись в массив
+@app.post("/add_check")
+def cash_add(check: Сheck):
+    deposit.append(check.balance)
+    return {"msg": "Ваши средства переведены на депозит", "deposit": deposit}
 
-# id - получение определенного числа из массива
+
+# Получить запись по id (через query параметр)
 @app.get("/get_check")
-def cash_get(id:IdCheck):
-    if id <= len(deposit):
-        return deposit[id]
+def cash_get(id: int):
+    if 0 <= id < len(deposit):
+        return {"balance": deposit[id]}
     else:
-        return {"msg":"Такого счёта не существует!"}
+        return {"msg": "Такого счёта не существует!"}
 
-# id - bal(int -inf до +inf) - сколько прибавляем к balance - уменьшить или увеличить баланс по id в массиве
-@app.put("put_check")
-def update_check(check:UpdateCheck):
-    if 0 <=  check.id < len(deposit):
+
+# Обновить баланс по id
+@app.put("/put_check")
+def update_check(check: UpdateCheck):
+    if 0 <= check.id < len(deposit):
         deposit[check.id] += check.amount
+        return {"msg": "Баланс обновлён", "balance": deposit[check.id]}
     else:
-        print("Ошибка: индекс вне диапазона")
+        return {"msg": "Ошибка: индекс вне диапазона"}
 
-@app.delete("/delet_check")
-def cash_delet(id:DelCheck):
-    if id <= len(deposit):
+
+# Удалить запись по id
+@app.delete("/delete_check")
+def cash_delete(id: int):
+    if 0 <= id < len(deposit):
         cash = deposit.pop(id)
-        return {"msg":f"Ваши средства на сумму {cash}, были выведены со счёта"}
+        return {"msg": f"Ваши средства на сумму {cash} были выведены со счёта"}
     else:
-        return {"msg":"Такого счёта не существует!"}
+        return {"msg": "Такого счёта не существует!"}
