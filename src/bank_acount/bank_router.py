@@ -20,8 +20,7 @@ def cash_add(check: Сheck):
 def cash_get(id: int):
     if 0 <= id < len(deposit):
         return {"balance": deposit[id]}
-    else:
-        return {"msg": "Такого счёта не существует!"}
+    return {"msg": "Такого счёта не существует!"}
 
 
 # Обновить баланс по id
@@ -30,8 +29,7 @@ def update_check(check: UpdateCheck):
     if 0 <= check.id < len(deposit):
         deposit[check.id] += check.amount
         return {"msg": "Баланс обновлён", "balance": deposit[check.id]}
-    else:
-        return {"msg": "Ошибка: индекс вне диапазона"}
+    return {"msg": "Ошибка: индекс вне диапазона"}
 
 
 # Удалить запись по id
@@ -40,5 +38,4 @@ def cash_delete(id: int):
     if 0 <= id < len(deposit):
         cash = deposit.pop(id)
         return {"msg": f"Ваши средства на сумму {cash} были выведены со счёта"}
-    else:
-        return {"msg": "Такого счёта не существует!"}
+    return {"msg": "Такого счёта не существует!"}
