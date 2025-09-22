@@ -1,4 +1,6 @@
+from typing import Literal
 from pydantic import BaseModel, Field
+from decimal import Decimal
 
 # схема для создания счёта
 class AccountCreate(BaseModel):
@@ -6,4 +8,5 @@ class AccountCreate(BaseModel):
 
 # схема для пополнения баланса счёта
 class AccountUpdate(BaseModel):
-    balance: float = Field(ge=0.0)
+    inf: Literal["+", "-"]
+    balance: Decimal = Field(ge=0, description="Сумма для изменения баланса")

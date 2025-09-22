@@ -33,21 +33,34 @@ def deposit_to_account(name: str, account_update: AccountUpdate,
     if not account:
         raise HTTPException(status_code=404, detail="Account not found")
 
-    account.balance += account_update.balance
+    if account_update.inf == "+":
+            account.balance += account_update.balance
+    elif account_update.inf == "-":
+        if account.balance < account_update.balance:
+            raise HTTPException(status_code=400, detail="Insufficient funds")
+        account.balance -= account_update.balance
+    else:
+        raise HTTPException(status_code=400, detail="Invalid operation, use '+' or '-'")
+
     session.commit()
     session.refresh(account)
 
-    return {"message": f"Deposit of {account_update.balance} to account {name}"}
+    return {
+        "message": f"Account {name} updated successfully",
+        "balance": account.balance
+        }  
 
 
-# # DELETE
-# session.delete(user)
-# session.commit()
-# # @app.get("/{account_id}/balance", response_model=float)
-# # def get_balance(account_id: str, session: Session = Depends(get_session)):
-# #     account = session.scalar(select(Account).filter(Account.id == account_id))
-# #     if not account:
-# #         raise HTTPException(status_code=404, detail="Account not found")
-# #     return account.balance
+# удалить счёт
+@app.delete("/{name}/delete")
+def close_account(name: str, session: Session = Depends(get_session)):
+    account = session.scalar(select(Account).filter(Account.name == name))
+    if not account:
+        raise HTTPException(status_code=404, detail="Account not found")
+    if account.balance != 0.0:
+        raise HTTPException(status_code=400, detail="Account must have zero balance to be closed")
+    session.delete(account)
+    session.commit()
+    return {"message": f"Account with ID {name} closed successfully"}
 
 
